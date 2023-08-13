@@ -60,7 +60,7 @@ app.get("/matches/:matchId/", async (request, response) => {
 app.get("/players/:playerId/matches", async (request, response) => {
   const { playerId } = request.params;
   const getPlayersQuery = `SELECT match_id AS matchId,match,year 
-  FROM player_details NATURAL JOIN match_details
+  FROM player_match_score NATURAL JOIN match_details
    WHERE player_id=${playerId};`;
   const playerDetails = await db.all(getPlayersQuery);
   response.send(playerDetails);
@@ -69,10 +69,10 @@ app.get("/players/:playerId/matches", async (request, response) => {
 app.get("/matches/:matchId/players", async (request, response) => {
   const { matchId } = request.params;
   const getPlayersQuery = `SELECT
-   player_id AS playerId,
-   player_name AS playerName 
-   FROM player_details inner JOIN match_details
-    WHERE match_id=(${matchId});`;
+	      player_details.player_id AS playerId,
+	      player_details.player_name AS playerName
+	    FROM player_match_score NATURAL JOIN player_details
+        WHERE match_id=${matchId};`;
   const playerDetails = await db.all(getPlayersQuery);
   response.send(playerDetails);
 });
